@@ -20,6 +20,8 @@
 	</div>
 
 	<div class="manual_address">
+		$ManualToggleField
+
 		<% loop ManualAddressFields %>
 			$FieldHolder
 		<% end_loop %>

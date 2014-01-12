@@ -24,16 +24,20 @@ class AddressFinderField extends TextField {
 	private $addressField;
 
 	/**
+	 * @var HiddenField
+	 */
+	private $manualToggle;
+
+	/**
 	 * @param string $name
 	 * @param string $title
 	 * @param mixed $value
 	 */
 	public function __construct($name, $title = null, $value = null) {
 		$this->addressField = new TextField("{$name}[Address]", $title);
-
-		$this->manualFields = new FieldList(
-			new HiddenField("{$name}[ManualAddress]")
-		);
+		$this->manualToggle = new HiddenField("{$name}[ManualAddress]");
+		$this->manualFields = new FieldList();
+		
 
 		for($i = 1; $i < 4; $i++) {
 			$this->manualFields->push(new TextField(
@@ -83,6 +87,22 @@ class AddressFinderField extends TextField {
 	}
 
 	/**
+	 * @param string $message
+	 * @param string $messageType
+	 */
+	public function setError($message, $messageType) {
+		// show the manual fields
+		$this->manualToggle->setValue('1');
+
+		$name = $this->getName();
+		$field = $this->manualFields->dataFieldByName("{$name}[{$messageType}]");
+
+		if($field) { 
+			$field->setError($message, 'validation');
+		}
+	}
+
+	/**
 	 * @return void
 	 */
 	public function performReadonlyTransformation() {
@@ -123,7 +143,8 @@ class AddressFinderField extends TextField {
 		return parent::FieldHolder(array(
 			'ApiKey' => Config::inst()->get('AddressFinder', 'api_key'),
 			'ManualAddressFields' => $this->getManualFields(),
-			'AddressField' => $this->addressField->Field()
+			'AddressField' => $this->addressField->Field(),
+			'ManualToggleField' => $this->manualToggle
 		));
 	}
 	
@@ -139,7 +160,7 @@ class AddressFinderField extends TextField {
 	 * @param DataObjectInterface $record
 	 */
 	public function setValue($value, $record = null) {
-		if($record) {
+		if($record && is_object($record)) {
 			$this->addressField->setValue($record->{$this->getName()});
 
 			foreach($this->getManualFields() as $field) {
@@ -219,48 +240,50 @@ class AddressFinderField extends TextField {
 		$name = $this->getName();
 
 		if($validator->fieldIsRequired($name)) {
-			$fields = $this->getManualFields();
+			// remove this as a required field as we're doing the checking here.
+			$validator->removeRequiredField($name);
 
+			$fields = $this->getManualFields();
 			$postal = $fields->dataFieldByName("{$name}[PostalLine1]");
 
 			if(!$postal->Value()) {
 				$validator->validationError(
 					$name, 
 					_t("AddressFinderField.ENTERAVALIDADDRESS", "Please enter a valid address."),
-					"validation", 
+					'PostalLine1', 
 					false
 				);
 			
 				return false;
 			}
 
-			$town = $fields->dataFieldByName("{$name}[Town]");
+			$city = $fields->dataFieldByName("{$name}[City]");
 
-			if(!$town->Value()) {
+			if(!$city->Value()) {
 				$validator->validationError(
 					$name, 
-					_t("AddressFinderField.ENTERAVALIDTOWN", "Please enter a valid town."),
-					"validation", 
+					_t("AddressFinderField.ENTERAVALIDCITY", "Please enter a valid city."),
+					"City", 
 					false
 				);
 			
 				return false;
 			}
 
-			$town = $fields->dataFieldByName("{$name}[Postcode]");
+			$postcode = $fields->dataFieldByName("{$name}[Postcode]");
 
-			if(!$town->Value()) {
+			if(!$postcode->Value()) {
 				$validator->validationError(
 					$name, 
 					_t("AddressFinderField.ENTERAVALIDPOSTCODE", "Please enter a valid postcode."),
-					"validation", 
+					"Postcode", 
 					false
 				);
 			
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 }

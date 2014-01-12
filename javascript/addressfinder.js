@@ -3,16 +3,21 @@
 		$(".address_finder").each(function (i, elem) {
 			var widget, 
 				key = $(elem).data('api-key'),
-				field = $(this).find('input.addressfinder').get(0);
 				address = $(elem).find('.address_finder_address'),
 				input = $(elem).find("input").first(),
 				manual = $(elem).find('.manual_address'),
 				toggle = $(elem).find('.toggle_manual_address');
 
+			var useManual = manual.find("input[name*=ManualAddress]"),
+				field = address.find('input').get(0);
+
 			/* update ui with javascript */
 			toggle.show();
 			address.show();
-			manual.hide();
+
+			if(!useManual.val()) {
+				manual.hide();
+			}
 
 			/* create widget */
 			widget = new AddressFinder.Widget(field, key, {
@@ -37,12 +42,26 @@
 			toggle.on('click', function(e) {
 				e.preventDefault();
 
-				manual.toggle();
+				manual.toggle('slow');
+
+				// if the manual address is visible then add a hidden flag so
+				if(manual.is(":visible")) {
+					useManual.val('1');
+				}
+				else {
+					useManual.val('0');
+				}
 			});
 
 			/* on manually changing of the fields then we have to clear x/y */
 			manual.on('keydown', 'input', function(e) {
-				console.log('blurred');
+				manual.find("input[name*=Longitude]").val('');
+				manual.find("input[name*=Latitude]").val('');
+			});
+
+			/* focusing back on the address dropdown should hide the manual */
+			input.on('focus', function(e) {
+				manual.slideUp();
 			});
 		});
 	});
