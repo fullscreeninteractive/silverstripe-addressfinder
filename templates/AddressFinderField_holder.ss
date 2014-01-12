@@ -3,7 +3,7 @@
 		<% if $Title %><label class="left" for="$ID">$Title</label><% end_if %>
 
 		<div class="middleColumn">
-			$Field
+			$AddressField
 		</div>
 
 		<% if $RightTitle %><label class="right" for="$ID">$RightTitle</label><% end_if %>

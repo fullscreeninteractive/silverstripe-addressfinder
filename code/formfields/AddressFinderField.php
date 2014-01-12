@@ -19,12 +19,21 @@ class AddressFinderField extends TextField {
 	private $manualFields;
 
 	/**
+	 * @var TextField
+	 */
+	private $addressField;
+
+	/**
 	 * @param string $name
 	 * @param string $title
 	 * @param mixed $value
 	 */
 	public function __construct($name, $title = null, $value = null) {
-		$this->manualFields = new FieldList();
+		$this->addressField = new TextField("{$name}[Address]", $title);
+
+		$this->manualFields = new FieldList(
+			new HiddenField("{$name}[ManualAddress]")
+		);
 
 		for($i = 1; $i < 4; $i++) {
 			$this->manualFields->push(new TextField(
@@ -106,24 +115,15 @@ class AddressFinderField extends TextField {
 	 *
 	 * @return string
 	 */
-	public function Field($properties = array()) {
+	public function FieldHolder($properties = array()) {
 		Requirements::javascript('http://www.addressfinder.co.nz/assets/v2/widget.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 		Requirements::javascript('addressfinder/javascript/addressfinder.js');
-		
-		return parent::Field();
-	}
 
-	/**
-	 * @param array $properties
-	 *
-	 * @return string
-	 */
-	public function FieldHolder($properties = array()) {
 		return parent::FieldHolder(array(
 			'ApiKey' => Config::inst()->get('AddressFinder', 'api_key'),
 			'ManualAddressFields' => $this->getManualFields(),
-			'AllowManualAddress'
+			'AddressField' => $this->addressField->Field()
 		));
 	}
 	
@@ -139,40 +139,126 @@ class AddressFinderField extends TextField {
 	 * @param DataObjectInterface $record
 	 */
 	public function setValue($value, $record = null) {
+		if($record) {
+			$this->addressField->setValue($record->{$this->getName()});
 
-	}
+			foreach($this->getManualFields() as $field) {
+				$name = $this->getNestedFieldName($field);
 
-	/**
-	 * @return void
-	 */
-	public function Value() {
+				$field->setValue($record->{$name});
+			}
+		} else if(is_array($value)) {
+			if(isset($value['Address'])) {
+				$this->addressField->setValue($value['Address']);
+			}
 
+			foreach($this->getManualFields() as $field) {
+				$nested = $this->getNestedFieldName($field);
+
+				if(isset($value[$nested])) {
+					$field->setValue($value[$nested]);
+				}
+			}
+		}
 	}
 	
 	/**
 	 * @param DataObjectInterface
 	 */
 	public function saveInto(DataObjectInterface $object) {
+		$object->{$this->getName()} = $this->addressField->Value();
 
+		foreach($this->getManualFields() as $field) {
+			$fieldName = $this->getNestedFieldName($field);
+
+			$object->{$fieldName} = $field->Value();
+		}
+	}
+
+	/**
+	 * Returns the actual name of a child field without the prefix of this 
+	 * field.
+	 *
+	 * @param FormField $field
+	 *
+	 * @return string
+	 */
+	protected function getNestedFieldName($field) {
+		return substr($field->getName(), strlen($this->getName()) + 1, -1);
 	}
 	
 	/**
+	 * @param string $name
+	 *
+	 * @return AddressFinderField
+	 */
+	public function setName($name) {
+		parent::setName($name);
+
+		$this->addressField->setName("{$name}[Address]");
+
+		foreach($this->getManualFields() as $field) {
+			$nested = $this->getNestedFieldName($field);
+
+			$field->setName("{$name}[{$nested}]");
+		}
+
+		return $this;
+	}
+
+	/**
+	 * If this field is required then we require at least the first postal line
+	 * along with the town and postcode. Either this has been manually filled
+	 * in or, automatically filled in by 
+	 *
 	 * @param Validator $validator
 	 *
 	 * @return bool
 	 */
 	public function validate($validator) {
-		if($validator->fieldIsRequired($this->Name())) {
-			/*
+		$name = $this->getName();
+
+		if($validator->fieldIsRequired($name)) {
+			$fields = $this->getManualFields();
+
+			$postal = $fields->dataFieldByName("{$name}[PostalLine1]");
+
+			if(!$postal->Value()) {
 				$validator->validationError(
-					$this->Name(), 
-					"Please enter a valid New Zealand address.",
+					$name, 
+					_t("AddressFinderField.ENTERAVALIDADDRESS", "Please enter a valid address."),
 					"validation", 
 					false
 				);
 			
 				return false;
-			*/
+			}
+
+			$town = $fields->dataFieldByName("{$name}[Town]");
+
+			if(!$town->Value()) {
+				$validator->validationError(
+					$name, 
+					_t("AddressFinderField.ENTERAVALIDTOWN", "Please enter a valid town."),
+					"validation", 
+					false
+				);
+			
+				return false;
+			}
+
+			$town = $fields->dataFieldByName("{$name}[Postcode]");
+
+			if(!$town->Value()) {
+				$validator->validationError(
+					$name, 
+					_t("AddressFinderField.ENTERAVALIDPOSTCODE", "Please enter a valid postcode."),
+					"validation", 
+					false
+				);
+			
+				return false;
+			}
 		}
 		
 		return true;
