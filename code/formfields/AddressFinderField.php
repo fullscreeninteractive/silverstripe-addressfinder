@@ -136,16 +136,18 @@ class AddressFinderField extends TextField {
 	 * @return string
 	 */
 	public function FieldHolder($properties = array()) {
-		Requirements::javascript('http://www.addressfinder.co.nz/assets/v2/widget.js');
+		Requirements::javascript('//www.addressfinder.co.nz/assets/v2/widget.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 		Requirements::javascript('addressfinder/javascript/addressfinder.js');
 
-		return parent::FieldHolder(array(
+		$properties = array(
 			'ApiKey' => Config::inst()->get('AddressFinder', 'api_key'),
 			'ManualAddressFields' => $this->getManualFields(),
 			'AddressField' => $this->addressField->Field(),
-			'ManualToggleField' => $this->manualToggle
-		));
+			'ManualToggleField' => $this->manualToggle,
+		);
+
+		return parent::FieldHolder($properties);
 	}
 	
 	/**
@@ -153,6 +155,13 @@ class AddressFinderField extends TextField {
 	 */
 	public function getManualFields() {
 		return $this->manualFields;
+	}
+
+	/**
+	 * @return TextField
+	 */
+	public function getAddressField() {
+		return $this->addressField;
 	}
 
 	/**
@@ -180,6 +189,8 @@ class AddressFinderField extends TextField {
 					$field->setValue($value[$nested]);
 				}
 			}
+		} else if(is_string($value)) {
+			$this->addressField->setValue($value);
 		}
 	}
 	
