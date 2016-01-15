@@ -7,12 +7,13 @@
  *
  * @package addressfinder
  */
-class AddressFinder {
-	
-	/**
-	 * @config
-	 *
-	 * @var string
-	 */
-	private static $api_key;
+class AddressFinder
+{
+    
+    /**
+     * @config
+     *
+     * @var string
+     */
+    private static $api_key;
 }
