@@ -1,11 +1,13 @@
 <?php
 
+use SilverStripe\Forms\TextField;
+
 /**
  * A wrapper for the AddressFinder API.
  *
  * Standard layout is a simple text field with the required javascript events,
- * but as per best practices (http://addressfinder.co.nz/docs/best_practices) 
- * this FormField also provides fallback fields in case the user cannot find 
+ * but as per best practices (http://addressfinder.co.nz/docs/best_practices)
+ * this FormField also provides fallback fields in case the user cannot find
  * their address
  *
  * @package addressfinder
@@ -39,7 +41,7 @@ class AddressFinderField extends TextField
         $this->addressField = new TextField("{$name}[Address]", $title);
         $this->manualToggle = new HiddenField("{$name}[ManualAddress]");
         $this->manualFields = new FieldList();
-        
+
 
         for ($i = 1; $i < 4; $i++) {
             $this->manualFields->push(new TextField(
@@ -156,7 +158,7 @@ class AddressFinderField extends TextField
 
         return parent::FieldHolder($properties);
     }
-    
+
     /**
      * @return FieldList
      */
@@ -203,23 +205,23 @@ class AddressFinderField extends TextField
             $this->addressField->setValue($value);
         }
     }
-    
+
     /**
-     * @param DataObjectInterface
+     * @param SilverStripe\ORM\DataObjectInterface
      */
-    public function saveInto(DataObjectInterface $object)
+    public function saveInto(SilverStripe\ORM\DataObjectInterface $record)
     {
-        $object->{$this->getName()} = $this->addressField->Value();
+        $record->{$this->getName()} = $this->addressField->Value();
 
         foreach ($this->getManualFields() as $field) {
             $fieldName = $this->getNestedFieldName($field);
 
-            $object->{$fieldName} = $field->Value();
+            $record->{$fieldName} = $field->Value();
         }
     }
 
     /**
-     * Returns the actual name of a child field without the prefix of this 
+     * Returns the actual name of a child field without the prefix of this
      * field.
      *
      * @param FormField $field
@@ -230,7 +232,7 @@ class AddressFinderField extends TextField
     {
         return substr($field->getName(), strlen($this->getName()) + 1, -1);
     }
-    
+
     /**
      * @param string $name
      *
@@ -254,7 +256,7 @@ class AddressFinderField extends TextField
     /**
      * If this field is required then we require at least the first postal line
      * along with the town and postcode. Either this has been manually filled
-     * in or, automatically filled in by 
+     * in or, automatically filled in by
      *
      * @param Validator $validator
      *
@@ -278,7 +280,7 @@ class AddressFinderField extends TextField
                     'PostalLine1',
                     false
                 );
-            
+
                 return false;
             }
 
@@ -291,7 +293,7 @@ class AddressFinderField extends TextField
                     "City",
                     false
                 );
-            
+
                 return false;
             }
 
@@ -304,7 +306,7 @@ class AddressFinderField extends TextField
                     "Postcode",
                     false
                 );
-            
+
                 return false;
             }
         }

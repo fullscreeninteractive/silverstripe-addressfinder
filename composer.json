@@ -2,7 +2,7 @@
     "name": "fullscreeninteractive/silverstripe-addressfinder",
     "type": "silverstripe-module",
     "description": "SilverStripe FormField for AddressFinder.co.nz",
-    "keywords": ["silverstripe","form"],
+    "keywords": ["silverstripe", "form"],
     "homepage": "https://github.com/fullscreeninteractive/silverstripe-addressfinder",
     "license": "BSD-3-Clause",
     "authors": [{
@@ -11,9 +11,9 @@
         "homepage": "http://fullscreen.io"
     }],
     "extra": {
-    	"installer-name": "addressfinder"
+        "installer-name": "addressfinder"
     },
     "require": {
-        "silverstripe/framework": ">=3.1"
+        "silverstripe/framework": "^4.0.*"
     }
 }
