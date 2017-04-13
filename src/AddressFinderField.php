@@ -1,6 +1,15 @@
 <?php
 
+namespace FullscreenInteractive\SilverStripe;
+
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\HiddenField;
+use SilverStripe\Forms\NumericField;
+
+use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\View\Requirements;
+use SilverStripe\Core\Config\Config;
 
 /**
  * A wrapper for the AddressFinder API.
@@ -74,6 +83,8 @@ class AddressFinderField extends TextField
             _t("AddressFinderField.POSTCODE", "Postcode")
         ));
 
+        $this->setFieldHolderTemplate('Includes/AddressFinderField_holder');
+
         parent::__construct($name, $title, $value);
     }
 
@@ -89,6 +100,8 @@ class AddressFinderField extends TextField
         foreach ($this->manualFields as $field) {
             $field->setReadonly($bool);
         }
+
+        return $this;
     }
 
     /**
@@ -106,6 +119,8 @@ class AddressFinderField extends TextField
         if ($field) {
             $field->setError($message, 'validation');
         }
+
+        return $this;
     }
 
     /**
@@ -125,9 +140,7 @@ class AddressFinderField extends TextField
     }
 
     /**
-     * @param bool $bool
      *
-     * @return void
      */
     public function setDisabled($bool)
     {
@@ -136,6 +149,8 @@ class AddressFinderField extends TextField
         foreach ($this->manualFields as $field) {
             $field->setDisabled($bool);
         }
+
+        return $this;
     }
 
     /**
@@ -145,18 +160,25 @@ class AddressFinderField extends TextField
      */
     public function FieldHolder($properties = array())
     {
-        Requirements::javascript('//www.addressfinder.co.nz/assets/v2/widget.js');
-        Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+        Requirements::javascript('//api.addressfinder.io/assets/v3/widget.js');
+        Requirements::javascript(ADMIN_THIRDPARTY_DIR . '/jquery/jquery.js');
         Requirements::javascript('addressfinder/javascript/addressfinder.js');
 
         $properties = array(
-            'ApiKey' => Config::inst()->get('AddressFinder', 'api_key'),
             'ManualAddressFields' => $this->getManualFields(),
             'AddressField' => $this->addressField->Field(),
             'ManualToggleField' => $this->manualToggle,
         );
 
         return parent::FieldHolder($properties);
+    }
+
+    /**
+     *
+     */
+    public function getApiKey()
+    {
+        return Config::inst()->get(AddressFinderField::class, 'api_key');
     }
 
     /**
@@ -209,7 +231,7 @@ class AddressFinderField extends TextField
     /**
      * @param SilverStripe\ORM\DataObjectInterface
      */
-    public function saveInto(SilverStripe\ORM\DataObjectInterface $record)
+    public function saveInto(DataObjectInterface $record)
     {
         $record->{$this->getName()} = $this->addressField->Value();
 

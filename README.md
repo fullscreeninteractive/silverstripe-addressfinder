@@ -1,24 +1,24 @@
 # AddressFinder FormField for SilverStripe
 
-## Maintainer Contact 
- * Will Rossiter 
+## Maintainer Contact
+ * Will Rossiter
    <will (at) fullscreen (dot) io>
-	
+
 ## Requirements
- * SilverStripe 3.1 or higher
+ * SilverStripe 4.0 or higher
 
 ## Overview
 
-This module provides a custom `AddressFinderField` which implements the 
+This module provides a custom `AddressFinderField` which implements the
 javascript AddressFinder widget ([1](http://addressfinder.co.nz/docs/widget_docs))
 
-To get started, sign up for an account at 
-[addressfinder.co.nz/plans](http://addressfinder.co.nz/plans) and set your 
+To get started, sign up for an account at
+[addressfinder.co.nz/plans](http://addressfinder.co.nz/plans) and set your
 AddressFinder key values via the Config system
 
 *mysite/_config/addressfinder.yml*
 ```
-AddressFinder:
+FullscreenInteractive\SilverStripe\AddressFinderField:
   api_key: 123
 ```
 
@@ -32,7 +32,7 @@ This will provide your form with a single text box that provides an autocomplete
 dropdown as well as a toggle for the user to enter a manual address in the event
 the API is unaccessible.
 
-The form field provides the saveInto logic for automatically saving into a 
+The form field provides the saveInto logic for automatically saving into a
 DataObject model if defined. The fields that the module will save too (if in the
 database) are
 
