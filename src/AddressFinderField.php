@@ -6,7 +6,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\Forms\NumericField;
-
+use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\View\Requirements;
 use SilverStripe\Core\Config\Config;
@@ -162,7 +162,12 @@ class AddressFinderField extends TextField
     {
         Requirements::javascript('//api.addressfinder.io/assets/v3/widget.js');
         Requirements::javascript(ADMIN_THIRDPARTY_DIR . '/jquery/jquery.js');
-        Requirements::javascript('addressfinder/javascript/addressfinder.js');
+
+        if(Controller::curr()->hasMethod('ShowSwitchView')) {
+            // leftandmain check. If admin then use entwine.
+        } else {
+            Requirements::javascript('addressfinder/javascript/addressfinder.js');
+        }
 
         $properties = array(
             'ManualAddressFields' => $this->getManualFields(),
