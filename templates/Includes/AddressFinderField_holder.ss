@@ -2,9 +2,10 @@
 	<div id="$Name" class="address_finder_address form-group field text<% if $extraClass %> $extraClass<% end_if %>" style="display: none;">
 		<% if $Title %><label class="form__field-label" for="$ID">$Title</label><% end_if %>
 
-		<div class="form__field-holder" style="position: relative">
-			$AddressField
-
+		<div class="form__field-holder">
+            <div class="addressfinder__holder" style="position: relative">
+			 $AddressField
+            </div>
 
     		<% if $Message %><span class="message $MessageType">$Message</span><% end_if %>
     		<% if $Description %><p class="form__field-description">$Description</p><% end_if %>

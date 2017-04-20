@@ -22,7 +22,7 @@
 
             /* create widget */
             widget = new AddressFinder.Widget(field, key, "NZ", {
-                container: $(elem).find('.form__field-holder').get(0)
+                container: $(elem).find('.addressfinder__holder').get(0)
             });
 
             /* updates manual fields and hidden metadata */
