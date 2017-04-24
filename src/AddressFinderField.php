@@ -40,6 +40,10 @@ class AddressFinderField extends TextField
      */
     private $manualToggle;
 
+    private static $api_key = false;
+
+    private static $include_address_finder_js = true;
+
     /**
      * @param string $name
      * @param string $title
@@ -48,6 +52,7 @@ class AddressFinderField extends TextField
     public function __construct($name, $title = null, $value = null)
     {
         $this->addressField = new TextField("{$name}[Address]", $title);
+        $this->addressField->setAttribute('autocomplete', 'off');
         $this->manualToggle = new HiddenField("{$name}[ManualAddress]");
         $this->manualFields = new FieldList();
 
@@ -78,10 +83,12 @@ class AddressFinderField extends TextField
             _t("AddressFinderField.CITY", "City")
         ));
 
-        $this->manualFields->push(new NumericField(
+        $this->manualFields->push($postcode = new NumericField(
             "{$name}[Postcode]",
             _t("AddressFinderField.POSTCODE", "Postcode")
         ));
+
+        $postcode->setHTML5(true);
 
         $this->setFieldHolderTemplate('Includes/AddressFinderField_holder');
 
@@ -136,7 +143,10 @@ class AddressFinderField extends TextField
             $readonly->push($field->performReadonlyTransformation());
         }
 
+        $this->addressField = $this->addressField->performReadonlyTransformation();
         $this->manualFields = $readonly;
+
+        return clone $this;
     }
 
     /**
@@ -161,12 +171,13 @@ class AddressFinderField extends TextField
     public function FieldHolder($properties = array())
     {
         Requirements::javascript('//api.addressfinder.io/assets/v3/widget.js');
-        Requirements::javascript(ADMIN_THIRDPARTY_DIR . '/jquery/jquery.js');
 
         if(Controller::curr()->hasMethod('ShowSwitchView')) {
             // leftandmain check. If admin then use entwine.
         } else {
-            Requirements::javascript('addressfinder/javascript/addressfinder.js');
+            if(Config::inst()->get(AddressFinderField::class, 'include_address_finder_js')) {
+                Requirements::javascript('addressfinder/javascript/addressfinder.js');
+            }
         }
 
         $properties = array(
