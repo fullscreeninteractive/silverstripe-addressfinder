@@ -44,6 +44,10 @@ class AddressFinderField extends TextField
 
     private static $include_address_finder_js = true;
 
+    private $showLatLngManual = false;
+
+    private $requireLatLngManual = false;
+
     /**
      * @param string $name
      * @param string $title
@@ -94,6 +98,21 @@ class AddressFinderField extends TextField
 
         parent::__construct($name, $title, $value);
     }
+
+    public function setShowLatLngManual($bool)
+    {
+        $this->showLatLngManual = $bool;
+
+        return $this;
+    }
+
+    public function setRequireLatLngManual($bool)
+    {
+        $this->requireLatLngManual = $bool;
+
+        return $this;
+    }
+
 
     /**
      * @param bool $bool
@@ -178,6 +197,18 @@ class AddressFinderField extends TextField
             if(Config::inst()->get(AddressFinderField::class, 'include_address_finder_js')) {
                 Requirements::javascript('addressfinder/javascript/addressfinder.js');
             }
+        }
+
+        $fields = $this->getManualFields();
+
+        if($this->showLatLngManual) {
+            $name = $this->getName();
+
+            $fields->removeByName("{$name}[Longitude]");
+            $fields->removeByName("{$name}[Latitude]");
+
+            $fields->push(new TextField("{$name}[Longitude]", 'Longitude'));
+            $fields->push(new TextField("{$name}[Latitude]", 'Latitude'));
         }
 
         $properties = array(
@@ -346,6 +377,34 @@ class AddressFinderField extends TextField
                 );
 
                 return false;
+            }
+
+            if($this->requireLatLngManual) {
+                $lat = $fields->dataFieldByName("{$name}[Latitude]");
+
+                if (!$lat->Value()) {
+                    $lat->validationError(
+                        $name,
+                        _t("AddressFinderField.LATITUDEMISSING", "Please enter a valid Latitude."),
+                        "Latitude",
+                        false
+                    );
+
+                    return false;
+                }
+
+                $lng = $fields->dataFieldByName("{$name}[Longitude]");
+
+                if (!$lng->Value()) {
+                    $lng->validationError(
+                        $name,
+                        _t("AddressFinderField.LONGTITUDEMISSING", "Please enter a valid Longitude."),
+                        "Longitude",
+                        false
+                    );
+
+                    return false;
+                }
             }
         }
 

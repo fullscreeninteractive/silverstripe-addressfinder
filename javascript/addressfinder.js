@@ -20,6 +20,9 @@
                 manual.hide()
             }
 
+            if (!$(elem).find('.addressfinder__holder input').length) {
+                return;
+            }
             /* create widget */
             widget = new AddressFinder.Widget(field, key, "NZ", {
                 container: $(elem).find('.addressfinder__holder').get(0)
@@ -53,6 +56,8 @@
                 } else {
                     useManual.val('0')
                 }
+
+                return false;
             })
 
             /* on manually changing of the fields then we have to clear x/y */
