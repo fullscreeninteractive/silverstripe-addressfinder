@@ -14,6 +14,6 @@
         "installer-name": "addressfinder"
     },
     "require": {
-        "silverstripe/framework": "^4"
+        "silverstripe/framework": "~4.0"
     }
 }
