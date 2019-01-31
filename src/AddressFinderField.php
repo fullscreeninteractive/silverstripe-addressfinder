@@ -189,10 +189,10 @@ class AddressFinderField extends TextField
     {
         Requirements::javascript('//api.addressfinder.io/assets/v3/widget.js');
 
-        if(Controller::curr()->hasMethod('ShowSwitchView')) {
+        if (Controller::curr()->hasMethod('ShowSwitchView')) {
             // leftandmain check. If admin then use entwine.
         } else {
-            if(Config::inst()->get(AddressFinderField::class, 'include_address_finder_js')) {
+            if (Config::inst()->get(AddressFinderField::class, 'include_address_finder_js')) {
                 Requirements::javascript('fullscreeninteractive/silverstripe-addressfinder:client/javascript/addressfinder.js');
             }
         }
@@ -390,7 +390,7 @@ class AddressFinderField extends TextField
                 return false;
             }
 
-            if($this->requireLatLngManual) {
+            if ($this->requireLatLngManual) {
                 $lat = $fields->dataFieldByName("{$name}[Latitude]");
 
                 if (!$lat->Value()) {

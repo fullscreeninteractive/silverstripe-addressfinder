@@ -18,6 +18,11 @@
             "FullscreenInteractive\\SilverStripe\\": "src/"
         }
     },
+    "extra": {
+        "expose": [
+            "client"
+        ]
+    },
     "scripts": {
       "lint": "phpcs src/ tests/",
       "lint-clean": "phpcbf src/ tests/"
