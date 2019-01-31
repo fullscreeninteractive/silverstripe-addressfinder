@@ -201,14 +201,27 @@ class AddressFinderField extends TextField
 
         $fields = $this->getManualFields();
 
-        if($this->showLatLngManual) {
+        if ($this->showLatLngManual) {
             $name = $this->getName();
 
-            $fields->removeByName("{$name}[Longitude]");
-            $fields->removeByName("{$name}[Latitude]");
+            $longitude = $fields->dataFieldByName("{$name}[Longitude]")->Value();
 
-            $fields->push(new TextField("{$name}[Longitude]", 'Longitude'));
-            $fields->push(new TextField("{$name}[Latitude]", 'Latitude'));
+            $latitude = $fields->dataFieldByName("{$name}[Latitude]")->Value();
+
+            $fields->removeByName("{$name}[Latitude]");
+            $fields->removeByName("{$name}[Longitude]");
+
+            $replaceLong = new TextField("{$name}[Longitude]", 'Longitude', $longitude);
+
+            $replaceLat = new TextField("{$name}[Latitude]", 'Latitude', $latitude);
+
+            if ($this->isReadonly()) {
+                $replaceLong->setReadonly(true);
+                $replaceLat->setReadonly(true);
+            }
+
+            $fields->push($replaceLong);
+            $fields->push($replaceLat);
         }
 
         $properties = array(
