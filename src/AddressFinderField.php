@@ -97,6 +97,11 @@ class AddressFinderField extends TextField
         parent::__construct($name, $title, $value);
     }
 
+    /**
+     * @param bool $bool
+     *
+     * @return $this
+     */
     public function setShowLatLngManual($bool)
     {
         $this->showLatLngManual = $bool;
@@ -104,9 +109,15 @@ class AddressFinderField extends TextField
         return $this;
     }
 
+    /**
+     * @param bool $bool
+     *
+     * @return $this
+     */
     public function setRequireLatLngManual($bool)
     {
         $this->requireLatLngManual = $bool;
+        $this->showLatLngManual = true;
 
         return $this;
     }
@@ -115,7 +126,7 @@ class AddressFinderField extends TextField
     /**
      * @param bool $bool
      *
-     * @return void
+     * @return $this
      */
     public function setReadonly($bool)
     {
@@ -131,6 +142,8 @@ class AddressFinderField extends TextField
     /**
      * @param string $message
      * @param string $messageType
+     *
+     * @return $this
      */
     public function setError($message, $messageType)
     {
@@ -148,7 +161,7 @@ class AddressFinderField extends TextField
     }
 
     /**
-     * @return void
+     * @return $this
      */
     public function performReadonlyTransformation()
     {
@@ -167,7 +180,9 @@ class AddressFinderField extends TextField
     }
 
     /**
+     * @param bool $bool
      *
+     * @return $this
      */
     public function setDisabled($bool)
     {
@@ -232,7 +247,7 @@ class AddressFinderField extends TextField
     }
 
     /**
-     *
+     * @return string
      */
     public function getApiKey()
     {
