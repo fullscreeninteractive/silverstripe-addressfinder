@@ -18,8 +18,6 @@ use SilverStripe\Core\Config\Config;
  * but as per best practices (http://addressfinder.co.nz/docs/best_practices)
  * this FormField also provides fallback fields in case the user cannot find
  * their address
- *
- * @package addressfinder
  */
 
 class AddressFinderField extends TextField
@@ -195,7 +193,7 @@ class AddressFinderField extends TextField
             // leftandmain check. If admin then use entwine.
         } else {
             if(Config::inst()->get(AddressFinderField::class, 'include_address_finder_js')) {
-                Requirements::javascript('addressfinder/javascript/addressfinder.js');
+                Requirements::javascript('fullscreeninteractive/silverstripe-addressfinder:client/javascript/addressfinder.js');
             }
         }
 
