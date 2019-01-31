@@ -1,4 +1,8 @@
-# AddressFinder FormField for SilverStripe
+# AddressFinder for SilverStripe
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fullscreeninteractive/silverstripe-addressfinder/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fullscreeninteractive/silverstripe-addressfinder/?branch=master)
+[![Build Status](https://travis-ci.org/fullscreeninteractive/silverstripe-addressfinder.svg?branch=master)](https://travis-ci.org/fullscreeninteractive/silverstripe-addressfinder)
+[![Latest Stable Version](https://poser.pugx.org/fullscreeninteractive/silverstripe-addressfinder/v/stable)](https://packagist.org/packages/fullscreeninteractive/silverstripe-addressfinder)
 
 ## Maintainer Contact
  * Will Rossiter
@@ -25,6 +29,8 @@ FullscreenInteractive\SilverStripe\AddressFinderField:
 Then add an instance of `AddressFinderField` to your form fields
 
 ```
+use FullscreenInteractive\SilverStripe\AddressFinderField;
+
 $fields->push(new AddressFinderField('Address'));
 ```
 
@@ -55,9 +61,11 @@ outlined below:
 ```php
 <?php
 
-class AddressObject extends DataObject {
+use SilverStripe\ORM\DataObject;
 
-	private static $db = array(
+class AddressObject extends DataObject
+{
+	private static $db = [
 		'Address' => 'Text',
 		'PostalLine1' => 'Varchar(200)',
 		'PostalLine2' => 'Varchar(200)',
@@ -70,7 +78,7 @@ class AddressObject extends DataObject {
 		'Postcode' => 'Varchar(200)',
 		'Latitude' => 'Varchar(200)',
 		'Longitude' => 'Varchar(200)'
-	);
+	];
 }
 ```
 
