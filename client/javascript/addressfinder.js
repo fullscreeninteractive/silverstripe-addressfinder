@@ -60,12 +60,6 @@
                 return false;
             })
 
-            /* on manually changing of the fields then we have to clear x/y */
-            manual.on('keydown', 'input', function(e) {
-                manual.find('input[name*=Longitude]').val('')
-                manual.find('input[name*=Latitude]').val('')
-            })
-
             /* focusing back on the address dropdown should hide the manual */
             input.on('focus', function(e) {
                 manual.slideUp()
