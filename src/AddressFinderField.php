@@ -50,7 +50,7 @@ class AddressFinderField extends TextField
     /**
      * @var boolean
      */
-    protected $showManualFields;
+    protected $showManualFields = true;
 
     protected $showLatLngManual = false;
 
