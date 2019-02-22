@@ -22,29 +22,39 @@ use SilverStripe\Core\Config\Config;
 
 class AddressFinderField extends TextField
 {
+    /**
+     * @config
+     */
+    private static $api_key = false;
+
+    /**
+     * @config
+     */
+    private static $include_address_finder_js = true;
 
     /**
      * @var FieldList
      */
-    private $manualFields;
+    protected $manualFields;
 
     /**
      * @var TextField
      */
-    private $addressField;
+    protected $addressField;
 
     /**
      * @var HiddenField
      */
-    private $manualToggle;
+    protected $manualToggle;
 
-    private static $api_key = false;
+    /**
+     * @var boolean
+     */
+    protected $showManualFields;
 
-    private static $include_address_finder_js = true;
+    protected $showLatLngManual = false;
 
-    private $showLatLngManual = false;
-
-    private $requireLatLngManual = false;
+    protected $requireLatLngManual = false;
 
     /**
      * @param string $name
@@ -238,9 +248,9 @@ class AddressFinderField extends TextField
         }
 
         $properties = array(
-            'ManualAddressFields' => $this->getManualFields(),
+            'ManualAddressFields' => ($this->showManualFields) ? $fields : null,
             'AddressField' => $this->addressField->Field(),
-            'ManualToggleField' => $this->manualToggle,
+            'ManualToggleField' => ($this->showManualFields) ? $this->manualToggle : null,
         );
 
         return parent::FieldHolder($properties);
@@ -260,6 +270,26 @@ class AddressFinderField extends TextField
     public function getManualFields()
     {
         return $this->manualFields;
+    }
+
+    /**
+     * @param boolean
+     *
+     * @return $this
+     */
+    public function setShowManualFields($manual = true)
+    {
+        $this->showManualFields = $manual;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getShowManualFields()
+    {
+        return $this->showManualFields;
     }
 
     /**

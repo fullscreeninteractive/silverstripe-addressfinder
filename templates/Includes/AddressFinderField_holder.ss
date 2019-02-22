@@ -14,19 +14,24 @@
                 <p><a href='http://addressfinder.co.nz'>AddressFinder</a> provided by <a href='http://www.abletech.co.nz/'>Able Technology</a></p>
             </div>
 
-            <div class="toggle_manual_address" style="display: none">
-                <p><a href="#"><% _t('AddressFinderField.ENTERMANUAL', 'Enter your address manually') %></a></p>
-            </div>
+            <% if ShowManualFields %>
+                <div class="toggle_manual_address" style="display: none">
+                    <p><a href="#"><% _t('AddressFinderField.ENTERMANUAL', 'Enter your address manually') %></a></p>
+                </div>
+            <% end_if %>
         </div>
 
         <% if $RightTitle %><p class="form__field-extra-label" id="extra-label-$ID">$RightTitle</p><% end_if %>
     </div>
 
-    <div class="manual_address">
-        $ManualToggleField
+    <% if ShowManualFields %>
 
-        <% loop ManualAddressFields %>
-            $FieldHolder
-        <% end_loop %>
-    </div>
+        <div class="manual_address">
+            $ManualToggleField
+
+            <% loop ManualAddressFields %>
+                $FieldHolder
+            <% end_loop %>
+        </div>
+    <% end_if %>
 </div>
