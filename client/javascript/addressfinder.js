@@ -1,7 +1,11 @@
 ;
 (function($) {
     $(document).ready(function() {
-        $('.address_finder').each(function(i, elem) {
+        /**
+         * 
+         * @param {DOMElement} elem 
+         */
+        var setupAddressFinderField = function(elem) {
             var widget,
                 key = $(elem).data('api-key'),
                 address = $(elem).find('.address_finder_address'),
@@ -64,6 +68,12 @@
             input.on('focus', function(e) {
                 manual.slideUp()
             })
+        }
+
+        $('.address_finder').each(function(i, elem) {
+            setupAddressFinderField(elem);
         })
+        
+        window.setupAddressFinderField = setupAddressFinderField
     })
 })(jQuery)
