@@ -312,7 +312,9 @@ class AddressFinderField extends TextField
             foreach ($this->getManualFields() as $field) {
                 $name = $this->getNestedFieldName($field);
 
-                $field->setValue($record->{$name});
+                if ($name) {
+                    $field->setValue($record->{$name});
+                }
             }
         } elseif (is_array($value)) {
             if (isset($value['Address'])) {
