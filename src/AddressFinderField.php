@@ -321,11 +321,13 @@ class AddressFinderField extends TextField
                 $this->addressField->setValue($value['Address']);
             }
 
-            foreach ($this->getManualFields() as $field) {
-                $nested = $this->getNestedFieldName($field);
+            if ($this->getShowManualFields()) {
+                foreach ($this->getManualFields() as $field) {
+                    $nested = $this->getNestedFieldName($field);
 
-                if (isset($value[$nested])) {
-                    $field->setValue($value[$nested]);
+                    if (isset($value[$nested])) {
+                        $field->setValue($value[$nested]);
+                    }
                 }
             }
         } elseif (is_string($value)) {
@@ -340,10 +342,11 @@ class AddressFinderField extends TextField
     {
         $record->{$this->getName()} = $this->addressField->Value();
 
-        foreach ($this->getManualFields() as $field) {
-            $fieldName = $this->getNestedFieldName($field);
-
-            $record->{$fieldName} = $field->Value();
+        if ($this->getShowManualFields()) {
+            foreach ($this->getManualFields() as $field) {
+                $fieldName = $this->getNestedFieldName($field);
+                $record->{$fieldName} = $field->Value();
+            }
         }
     }
 
