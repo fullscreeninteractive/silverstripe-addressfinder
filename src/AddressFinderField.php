@@ -108,6 +108,16 @@ class AddressFinderField extends TextField
     }
 
     /**
+     * Clones
+     */
+    public function __clone()
+    {
+        $this->manualFields = clone $this->manualFields;
+        $this->addressField = clone $this->addressField;
+        $this->manualToggle = clone $this->manualToggle;
+    }
+
+    /**
      * @param bool $bool
      *
      * @return $this
@@ -340,6 +350,15 @@ class AddressFinderField extends TextField
      */
     public function saveInto(DataObjectInterface $record)
     {
+        if (!$this->addressField->Value()) {
+            // value hasn't been set. Load from the URL
+            $postVars = Controller::curr()->getRequest()->requestVars();
+
+            if ($postVars && isset($postVars[$this->getName()])) {
+                $this->setValue($postVars[$this->getName()]);
+            }
+        }
+
         $record->{$this->getName()} = $this->addressField->Value();
 
         if ($this->getShowManualFields()) {
