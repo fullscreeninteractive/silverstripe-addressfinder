@@ -370,6 +370,26 @@ class AddressFinderField extends TextField
     }
 
     /**
+     * @return array
+     */
+    public function dataValue()
+    {
+        $data = [
+            'Address' => $this->addressField->Value(),
+        ];
+
+        if ($this->getShowManualFields()) {
+            foreach ($this->getManualFields() as $field) {
+                $fieldName = $this->getNestedFieldName($field);
+                $data[$fieldName] = $field->Value();
+            }
+        }
+
+        return $data;
+    }
+
+
+    /**
      * Returns the actual name of a child field without the prefix of this
      * field.
      *
