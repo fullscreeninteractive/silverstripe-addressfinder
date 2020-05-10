@@ -65,20 +65,49 @@ use SilverStripe\ORM\DataObject;
 
 class AddressObject extends DataObject
 {
-	private static $db = [
-		'Address' => 'Text',
-		'PostalLine1' => 'Varchar(200)',
-		'PostalLine2' => 'Varchar(200)',
-		'PostalLine3' => 'Varchar(200)',
-		'PostalLine4' => 'Varchar(200)',
-		'PostalLine5' => 'Varchar(200)',
-		'PostalLine6' => 'Varchar(200)',
-		'Suburb' => 'Varchar(200)',
-		'City' => 'Varchar(200)',
-		'Postcode' => 'Varchar(200)',
-		'Latitude' => 'Varchar(200)',
-		'Longitude' => 'Varchar(200)'
-	];
+    private static $db = [
+        'Address' => 'Text',
+        'PostalLine1' => 'Varchar(200)',
+        'PostalLine2' => 'Varchar(200)',
+        'PostalLine3' => 'Varchar(200)',
+        'PostalLine4' => 'Varchar(200)',
+        'PostalLine5' => 'Varchar(200)',
+        'PostalLine6' => 'Varchar(200)',
+        'Suburb' => 'Varchar(200)',
+        'City' => 'Varchar(200)',
+        'Postcode' => 'Varchar(200)',
+        'Latitude' => 'Varchar(200)',
+        'Longitude' => 'Varchar(200)'
+    ];
 }
 ```
 
+To prefix these fields, call `setFieldPrefix($prefix)`  on your
+`AddressFinderField` instance.
+
+```php
+AddressFinderField::create('HomeAddress')
+    ->setFieldPrefix('Home')
+AddressFinderField::create('WorkAddress')
+    ->setFieldPrefix('Work')
+
+// requires the following model
+private static $db = [
+    'HomeAddress' => 'Text',
+    'HomeAddressPostalLine1' => 'Varchar(200)',
+    'HomeAddressPostalLine2' => 'Varchar(200)',
+    'HomeAddressPostalLine3' => 'Varchar(200)',
+    'HomeAddressPostalLine4' => 'Varchar(200)',
+    'HomeAddressPostalLine5' => 'Varchar(200)',
+    'HomeAddressPostalLine6' => 'Varchar(200)',
+    'HomeAddressSuburb' => 'Varchar(200)',
+    'HomeAddressCity' => 'Varchar(200)',
+    'HomeAddressPostcode' => 'Varchar(200)',
+    'HomeAddressLatitude' => 'Varchar(200)',
+    'HomeAddressLongitude' => 'Varchar(200)',
+    'WorkAddress' => 'Text',
+    'WorkAddressPostalLine1' => 'Varchar(200)',
+    'WorkAddressPostalLine2' => 'Varchar(200)',
+    //...
+];
+```

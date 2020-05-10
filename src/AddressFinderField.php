@@ -48,6 +48,11 @@ class AddressFinderField extends TextField
     protected $manualToggle;
 
     /**
+     * @var string
+     */
+    protected $fieldPrefix = '';
+
+    /**
      * @var boolean
      */
     protected $showManualFields = true;
@@ -333,7 +338,7 @@ class AddressFinderField extends TextField
 
             if ($this->getShowManualFields()) {
                 foreach ($this->getManualFields() as $field) {
-                    $nested = $this->getNestedFieldName($field);
+                    $nested = $this->getNestedFieldName($field, false);
 
                     if (isset($value[$nested])) {
                         $field->setValue($value[$nested]);
@@ -380,7 +385,7 @@ class AddressFinderField extends TextField
 
         if ($this->getShowManualFields()) {
             foreach ($this->getManualFields() as $field) {
-                $fieldName = $this->getNestedFieldName($field);
+                $fieldName = $this->getNestedFieldName($field, false);
                 $data[$fieldName] = $field->Value();
             }
         }
@@ -394,12 +399,34 @@ class AddressFinderField extends TextField
      * field.
      *
      * @param FormField $field
+     * @param bool $prefixName
      *
      * @return string
      */
-    protected function getNestedFieldName($field)
+    protected function getNestedFieldName($field, $prefixName = true)
     {
-        return substr($field->getName(), strlen($this->getName()) + 1, -1);
+        $name = substr($field->getName(), strlen($this->getName()) + 1, -1);
+
+        if ($this->fieldPrefix && $prefixName) {
+            return $this->fieldPrefix . $name;
+        }
+
+        return $name;
+    }
+
+    /**
+     * Set a prefix for the data fields if required. For instance, without a
+     * prefix this field save the 'Postcode' as $record->Postcode, if you need
+     * to have multiple addresses (i.e Home, Work) or would prefer to have all
+     * the address info under a prefix then define one here
+     *
+     * setFieldPrefix('Work'); // $record->WorkPostcode = 1234;
+     */
+    public function setFieldPrefix($prefix)
+    {
+        $this->fieldPrefix = $prefix;
+
+        return $this;
     }
 
     /**
@@ -414,7 +441,7 @@ class AddressFinderField extends TextField
         $this->addressField->setName("{$name}[Address]");
 
         foreach ($this->getManualFields() as $field) {
-            $nested = $this->getNestedFieldName($field);
+            $nested = $this->getNestedFieldName($field, false);
 
             $field->setName("{$name}[{$nested}]");
         }
