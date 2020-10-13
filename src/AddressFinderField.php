@@ -96,6 +96,11 @@ class AddressFinderField extends TextField
         ));
 
         $this->manualFields->push(new TextField(
+            "{$name}[Region]",
+            _t("AddressFinderField.REGION", "Region")
+        ));
+
+        $this->manualFields->push(new TextField(
             "{$name}[City]",
             _t("AddressFinderField.CITY", "City")
         ));

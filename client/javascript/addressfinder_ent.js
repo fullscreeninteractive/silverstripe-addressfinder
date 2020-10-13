@@ -46,6 +46,7 @@
               }
 
               manual.find('input[name*=Suburb]').val(item.suburb || '')
+              manual.find('input[name*=Region]').val(item.region || '')
               manual.find('input[name*=City]').val(item.city || '')
               manual.find('input[name*=Postcode]').val(item.postcode || '')
               manual.find('input[name*=Longitude]').val(item.x || '')
