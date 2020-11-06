@@ -36,7 +36,7 @@ $fields->push(new AddressFinderField('Address'));
 
 This will provide your form with a single text box that provides an autocomplete
 dropdown as well as a toggle for the user to enter a manual address in the event
-the API is unaccessible.
+the API is inaccessible.
 
 The form field provides the saveInto logic for automatically saving into a
 DataObject model if defined. The fields that the module will save too (if in the
