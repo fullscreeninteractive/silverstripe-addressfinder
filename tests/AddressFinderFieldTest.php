@@ -13,7 +13,7 @@ class AddressFinderFieldTest extends SapphireTest
         $field = new AddressFinderField('name', 'Title');
 
         $this->assertEquals('Title', $field->Title());
-        $this->assertEquals(11, $field->getManualFields()->count(), '11 address fields');
+        $this->assertEquals(12, $field->getManualFields()->count(), '12 manual address fields');
     }
 
     public function testSetRequireLatLngManual()
