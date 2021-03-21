@@ -1,4 +1,4 @@
-# AddressFinder for SilverStripe
+# AddressFinder for Silverstripe
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fullscreeninteractive/silverstripe-addressfinder/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fullscreeninteractive/silverstripe-addressfinder/?branch=master)
 [![Build Status](https://travis-ci.org/fullscreeninteractive/silverstripe-addressfinder.svg?branch=master)](https://travis-ci.org/fullscreeninteractive/silverstripe-addressfinder)
@@ -13,17 +13,27 @@
 
 ## Overview
 
-This module provides a custom `AddressFinderField` which implements the
-javascript AddressFinder widget ([1](http://addressfinder.co.nz/docs/widget_docs))
+This module provides a custom Silverstripe `AddressFinderField` which implements the
+javascript AddressFinder widget ([1](http://addressfinder.co.nz/docs/widget_docs)) for address and postcode lookups in New Zealand and Australia.
+
+## Getting Started
 
 To get started, sign up for an account at
 [addressfinder.co.nz/plans](http://addressfinder.co.nz/plans) and set your
-AddressFinder key values via the Config system
+AddressFinder key values via the Silverstripe Config system
 
 *mysite/_config/addressfinder.yml*
 ```
 FullscreenInteractive\SilverStripe\AddressFinderField:
   api_key: 123
+```
+
+Or you can use environment variables if you prefer
+
+*mysite/_config/addressfinder.yml*
+```
+FullscreenInteractive\SilverStripe\AddressFinderField:
+  api_key: '`ADDRESS_FINDER_KEY`'
 ```
 
 Then add an instance of `AddressFinderField` to your form fields
@@ -82,8 +92,8 @@ class AddressObject extends DataObject
 }
 ```
 
-To prefix these fields, call `setFieldPrefix($prefix)`  on your
-`AddressFinderField` instance.
+To prefix these fields, call `setFieldPrefix($prefix)`  on your `AddressFinderField` 
+instance.
 
 ```php
 AddressFinderField::create('HomeAddress')
