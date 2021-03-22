@@ -18,19 +18,22 @@ javascript AddressFinder widget ([1](http://addressfinder.co.nz/docs/widget_docs
 
 ## Getting Started
 
-To get started, sign up for an account at
-[addressfinder.co.nz/plans](http://addressfinder.co.nz/plans) and set your
-AddressFinder key values via the Silverstripe Config system
+```
+composer require fullscreeninteractive/silverstripe-addressfinder ^1
+```
 
-*mysite/_config/addressfinder.yml*
+* Sign up for an NZ account at addressfinder.co.nz/plans/, or an Australia plan at addressfinder.com.au/plans/
+* Set your AddressFinder key values via the Silverstripe config system
+
+*app/_config/addressfinder.yml*
 ```
 FullscreenInteractive\SilverStripe\AddressFinderField:
   api_key: 123
 ```
 
-Or you can use environment variables if you prefer
+Or, use environment variables if you prefer:
 
-*mysite/_config/addressfinder.yml*
+*app/_config/addressfinder.yml*
 ```
 FullscreenInteractive\SilverStripe\AddressFinderField:
   api_key: '`ADDRESS_FINDER_KEY`'
