@@ -22,7 +22,7 @@ javascript AddressFinder widget ([1](http://addressfinder.co.nz/docs/widget_docs
 composer require fullscreeninteractive/silverstripe-addressfinder ^1
 ```
 
-* Sign up for an NZ account at [addressfinder.co.nz/plans/](https://www.addressfinder.co.nz/plans/), or an Australia plan at [addressfinder.com.au/plans/](https://www.addressfinder.com.au/plans/)
+* Sign up for an NZ account at [addressfinder.nz/plans/](https://www.addressfinder.nz/plans/), or an Australia plan at [addressfinder.com.au/plans/](https://www.addressfinder.com.au/plans/)
 * Set the AddressFinder key via the Silverstripe config system
 
 *app/_config/addressfinder.yml*
