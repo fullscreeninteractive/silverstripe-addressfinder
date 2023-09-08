@@ -23,7 +23,7 @@ class AddressFinderFieldTest extends SapphireTest
 
         $fieldHolder = $field->FieldHolder();
 
-        $this->assertContains('input type="text" name="name[Longitude]"', $fieldHolder);
+        $this->assertStringContainsString('input type="text" name="name[Longitude]"', $fieldHolder);
     }
 
     public function testValidator()

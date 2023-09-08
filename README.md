@@ -1,15 +1,11 @@
 # AddressFinder for Silverstripe
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fullscreeninteractive/silverstripe-addressfinder/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fullscreeninteractive/silverstripe-addressfinder/?branch=master)
-[![Build Status](https://travis-ci.org/fullscreeninteractive/silverstripe-addressfinder.svg?branch=master)](https://travis-ci.org/fullscreeninteractive/silverstripe-addressfinder)
 [![Latest Stable Version](https://poser.pugx.org/fullscreeninteractive/silverstripe-addressfinder/v/stable)](https://packagist.org/packages/fullscreeninteractive/silverstripe-addressfinder)
 
 ## Maintainer Contact
  * Will Rossiter
    <will (at) fullscreen (dot) io>
-
-## Requirements
- * SilverStripe 4.0 or higher
 
 ## Overview
 
@@ -19,7 +15,7 @@ javascript AddressFinder widget ([1](http://addressfinder.co.nz/docs/widget_docs
 ## Getting Started
 
 ```
-composer require fullscreeninteractive/silverstripe-addressfinder ^1
+composer require fullscreeninteractive/silverstripe-addressfinder
 ```
 
 * Sign up for an NZ account at [addressfinder.nz/plans/](https://www.addressfinder.nz/plans/), or an Australia plan at [addressfinder.com.au/plans/](https://www.addressfinder.com.au/plans/)
@@ -95,7 +91,7 @@ class AddressObject extends DataObject
 }
 ```
 
-To prefix these fields, call `setFieldPrefix($prefix)`  on your `AddressFinderField` 
+To prefix these fields, call `setFieldPrefix($prefix)`  on your `AddressFinderField`
 instance.
 
 ```php
