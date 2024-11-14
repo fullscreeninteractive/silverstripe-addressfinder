@@ -10,6 +10,7 @@ use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\View\Requirements;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Environment;
 
 /**
  * A wrapper for the AddressFinder API.
@@ -281,7 +282,14 @@ class AddressFinderField extends TextField
      */
     public function getApiKey()
     {
-        return Config::inst()->get(AddressFinderField::class, 'api_key');
+        $key = $this->config()->get('api_key');
+
+        // if the key is inside backticks then it's a constant and we need to load via Environment
+        if (preg_match('/`(.*)`/', $key, $matches)) {
+            $key = Environment::getEnv($matches[1]);
+        }
+
+        return $key;
     }
 
     /**

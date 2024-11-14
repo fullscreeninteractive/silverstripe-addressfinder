@@ -1,81 +1,110 @@
-(function ($) {
-    $(document).ready(function () {
-        /**
-         *
-         * @param {DOMElement} elem
-         */
-        var setupAddressFinderField = function (elem) {
-            var widget,
-                key = $(elem).data("api-key"),
-                address = $(elem).find(".address_finder_address"),
-                input = $(elem).find("input").first(),
-                manual = $(elem).find(".manual_address"),
-                toggle = $(elem).find(".toggle_manual_address");
+document.addEventListener("DOMContentLoaded", function () {
+    /**
+     * Sets up the Address Finder field.
+     * @param {HTMLElement} elem
+     */
+    var setupAddressFinderField = function (elem) {
+        var widget,
+            key = elem.getAttribute("data-api-key"),
+            address = elem.querySelector(".address_finder_address"),
+            input = elem.querySelector("input"),
+            manual = elem.querySelector(".manual_address"),
+            toggle = elem.querySelector(".toggle_manual_address");
 
-            var useManual = manual.find("input[name*=ManualAddress]"),
-                field = address.find("input").get(0);
+        var useManual = null;
+        var field = null;
 
-            /* update ui with javascript */
-            toggle.show();
-            address.show();
+        if (manual) {
+            useManual = manual.querySelector("input[name*=ManualAddress]");
+        }
 
-            if (!useManual.val()) {
-                manual.hide();
-            }
+        if (address) {
+            field = address.querySelector("input");
+        }
 
-            if (!$(elem).find(".addressfinder__holder input").length) {
-                return;
-            }
-            /* create widget */
-            widget = new AddressFinder.Widget(field, key, "NZ", {
-                container: $(elem).find(".addressfinder__holder").get(0),
-            });
+        if (!field) {
+            console.error(
+                "AddressFinder: Could not find address field in element",
+                elem
+            );
 
-            /* updates manual fields and hidden metadata */
-            widget.on("result:select", function (value, item) {
-                /* populate postal line fields */
-                for (var i = 1; i <= 6; i++) {
-                    manual
-                        .find("input[name*=PostalLine" + i + "]")
-                        .val(item["postal_line_" + i] || "");
-                }
+            return;
+        }
 
-                manual.find("input[name*=Suburb]").val(item.suburb || "");
-                manual.find("input[name*=Region]").val(item.region || "");
-                manual.find("input[name*=City]").val(item.city || "");
-                manual.find("input[name*=Postcode]").val(item.postcode || "");
-                manual.find("input[name*=Longitude]").val(item.x || "");
-                manual.find("input[name*=Latitude]").val(item.y || "");
+        // Update UI
+        if (toggle) {
+            toggle.style.display = "block";
+        }
 
-                $("body").trigger(jQuery.Event("addressselected"));
-            });
+        address.style.display = "block";
 
-            /* click handler to toggle manual div */
-            toggle.on("click", function (e) {
-                e.preventDefault();
+        if (useManual && useManual.value !== "1") {
+            manual.style.display = "none";
+        }
 
-                manual.toggle("slow");
-
-                // if the manual address is visible then add a hidden flag so
-                if (manual.is(":visible")) {
-                    useManual.val("1");
-                } else {
-                    useManual.val("0");
-                }
-
-                return false;
-            });
-
-            /* focusing back on the address dropdown should hide the manual */
-            input.on("focus", function (e) {
-                manual.slideUp();
-            });
-        };
-
-        $(".address_finder").each(function (i, elem) {
-            setupAddressFinderField(elem);
+        // Create widget
+        widget = new AddressFinder.Widget(field, key, "NZ", {
+            container: elem.querySelector(".addressfinder__holder"),
         });
 
-        window.setupAddressFinderField = setupAddressFinderField;
+        // Update manual fields and hidden metadata
+        widget.on("result:select", function (value, item) {
+            for (var i = 1; i <= 6; i++) {
+                var postalInput = manual.querySelector(
+                    "input[name*=PostalLine" + i + "]"
+                );
+                if (postalInput) {
+                    postalInput.value = item["postal_line_" + i] || "";
+                }
+            }
+
+            if (manual) {
+                manual.querySelector("input[name*=Suburb]").value =
+                    item.suburb || "";
+                manual.querySelector("input[name*=Region]").value =
+                    item.region || "";
+                manual.querySelector("input[name*=City]").value =
+                    item.city || "";
+                manual.querySelector("input[name*=Postcode]").value =
+                    item.postcode || "";
+                manual.querySelector("input[name*=Longitude]").value =
+                    item.x || "";
+                manual.querySelector("input[name*=Latitude]").value =
+                    item.y || "";
+            }
+
+            var event = new Event("addressselected", { bubbles: true });
+            document.body.dispatchEvent(event);
+        });
+
+        // Click handler to toggle manual div
+        toggle?.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            if (
+                manual.style.display === "none" ||
+                manual.style.display === ""
+            ) {
+                manual.style.display = "block";
+                useManual.value = "1";
+            } else {
+                manual.style.display = "none";
+                useManual.value = "0";
+            }
+
+            return false;
+        });
+
+        // Focus event to hide manual
+        input?.addEventListener("focus", function () {
+            manual.style.display = "none";
+        });
+    };
+
+    var addressFinderElements = document.querySelectorAll(".address_finder");
+    addressFinderElements.forEach(function (elem) {
+        setupAddressFinderField(elem);
     });
-})(jQuery);
+
+    window.setupAddressFinderField = setupAddressFinderField;
+});
