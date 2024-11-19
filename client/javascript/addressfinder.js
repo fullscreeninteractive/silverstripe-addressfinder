@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const setValueOnElement = (element, value) => {
+        if (element) {
+            element.value = value;
+        }
+    };
+
     /**
      * Sets up the Address Finder field.
      * @param {HTMLElement} elem
@@ -20,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (address) {
             field = address.querySelector("input");
+            address.style.display = "block";
         }
 
         if (!field) {
@@ -36,10 +43,10 @@ document.addEventListener("DOMContentLoaded", function () {
             toggle.style.display = "block";
         }
 
-        address.style.display = "block";
-
         if (useManual && useManual.value !== "1") {
-            manual.style.display = "none";
+            if (manual) {
+                manual.style.display = "none";
+            }
         }
 
         // Create widget
@@ -49,28 +56,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Update manual fields and hidden metadata
         widget.on("result:select", function (value, item) {
-            for (var i = 1; i <= 6; i++) {
-                var postalInput = manual.querySelector(
-                    "input[name*=PostalLine" + i + "]"
-                );
-                if (postalInput) {
-                    postalInput.value = item["postal_line_" + i] || "";
-                }
-            }
-
             if (manual) {
-                manual.querySelector("input[name*=Suburb]").value =
-                    item.suburb || "";
-                manual.querySelector("input[name*=Region]").value =
-                    item.region || "";
-                manual.querySelector("input[name*=City]").value =
-                    item.city || "";
-                manual.querySelector("input[name*=Postcode]").value =
-                    item.postcode || "";
-                manual.querySelector("input[name*=Longitude]").value =
-                    item.x || "";
-                manual.querySelector("input[name*=Latitude]").value =
-                    item.y || "";
+                for (var i = 1; i <= 6; i++) {
+                    var postalInput = manual.querySelector(
+                        "input[name*=PostalLine" + i + "]"
+                    );
+                    if (postalInput) {
+                        postalInput.value = item["postal_line_" + i] || "";
+                    }
+                }
+
+                setValueOnElement(
+                    manual.querySelector("input[name*=Suburb]"),
+                    item.suburb || ""
+                );
+
+                setValueOnElement(
+                    manual.querySelector("input[name*=Region]"),
+                    item.region || ""
+                );
+
+                setValueOnElement(
+                    manual.querySelector("input[name*=City]"),
+                    item.city || ""
+                );
+
+                setValueOnElement(
+                    manual.querySelector("input[name*=Postcode]"),
+                    item.postcode || ""
+                );
+
+                setValueOnElement(
+                    manual.querySelector("input[name*=Longitude]"),
+                    item.x || ""
+                );
+
+                setValueOnElement(
+                    manual.querySelector("input[name*=Latitude]"),
+                    item.y || ""
+                );
             }
 
             var event = new Event("addressselected", { bubbles: true });
@@ -80,6 +104,10 @@ document.addEventListener("DOMContentLoaded", function () {
         // Click handler to toggle manual div
         toggle?.addEventListener("click", function (e) {
             e.preventDefault();
+
+            if (!manual) {
+                return;
+            }
 
             if (
                 manual.style.display === "none" ||
@@ -97,7 +125,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Focus event to hide manual
         input?.addEventListener("focus", function () {
-            manual.style.display = "none";
+            if (manual) {
+                manual.style.display = "none";
+            }
         });
     };
 
@@ -106,5 +136,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setupAddressFinderField(elem);
     });
 
+    // @ts-ignore
     window.setupAddressFinderField = setupAddressFinderField;
 });
