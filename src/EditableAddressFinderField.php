@@ -6,7 +6,6 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\UserForms\Model\EditableFormField;
 
-
 if (!class_exists('\SilverStripe\UserForms\Model\EditableFormField')) {
     return;
 }

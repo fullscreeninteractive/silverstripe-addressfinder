@@ -17,7 +17,7 @@
 
                 <% if ShowManualFields %>
                     <div class="toggle_manual_address" style="display: none">
-                        <p><a href="#"><% _t('AddressFinderField.ENTERMANUAL', 'Or, enter your address manually') %></a></p>
+                        <p><a href="#"><%t AddressFinderField.ENTERMANUAL 'Or, enter your address manually' %></a></p>
                     </div>
                 <% end_if %>
             </div>

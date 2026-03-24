@@ -11,6 +11,9 @@ use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\View\Requirements;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Environment;
+use SilverStripe\Core\Validation\ValidationResult;
+use SilverStripe\Forms\Validation\CompositeValidator;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 
 /**
  * A wrapper for the AddressFinder API.
@@ -26,41 +29,26 @@ class AddressFinderField extends TextField
     /**
      * @config
      */
-    private static $api_key = false;
+    private static bool $api_key = false;
 
     /**
      * @config
      */
-    private static $include_address_finder_js = true;
+    private static bool $include_address_finder_js = true;
 
-    /**
-     * @var FieldList
-     */
-    protected $manualFields;
+    protected FieldList $manualFields;
 
-    /**
-     * @var TextField
-     */
-    protected $addressField;
+    protected TextField $addressField;
 
-    /**
-     * @var HiddenField
-     */
-    protected $manualToggle;
+    protected HiddenField $manualToggle;
 
-    /**
-     * @var string
-     */
-    protected $fieldPrefix = '';
+    protected string $fieldPrefix = '';
 
-    /**
-     * @var boolean
-     */
-    protected $showManualFields = true;
+    protected bool $showManualFields = true;
 
-    protected $showLatLngManual = false;
+    protected bool $showLatLngManual = false;
 
-    protected $requireLatLngManual = false;
+    protected bool $requireLatLngManual = false;
 
     /**
      * @param string $name
@@ -133,7 +121,7 @@ class AddressFinderField extends TextField
      *
      * @return $this
      */
-    public function setShowLatLngManual($bool)
+    public function setShowLatLngManual(bool $bool): self
     {
         $this->showLatLngManual = $bool;
 
@@ -145,7 +133,7 @@ class AddressFinderField extends TextField
      *
      * @return $this
      */
-    public function setRequireLatLngManual($bool)
+    public function setRequireLatLngManual(bool $bool): self
     {
         $this->requireLatLngManual = $bool;
         $this->showLatLngManual = true;
@@ -248,9 +236,9 @@ class AddressFinderField extends TextField
         if ($this->showLatLngManual) {
             $name = $this->getName();
 
-            $longitude = $fields->dataFieldByName("{$name}[Longitude]")->Value();
+            $longitude = $fields->dataFieldByName("{$name}[Longitude]")->getValue();
 
-            $latitude = $fields->dataFieldByName("{$name}[Latitude]")->Value();
+            $latitude = $fields->dataFieldByName("{$name}[Latitude]")->getValue();
 
             $fields->removeByName("{$name}[Latitude]");
             $fields->removeByName("{$name}[Longitude]");
@@ -292,10 +280,8 @@ class AddressFinderField extends TextField
         return $key;
     }
 
-    /**
-     * @return FieldList
-     */
-    public function getManualFields()
+
+    public function getManualFields(): FieldList
     {
         return $this->manualFields;
     }
@@ -305,7 +291,7 @@ class AddressFinderField extends TextField
      *
      * @return $this
      */
-    public function setShowManualFields($manual = true)
+    public function setShowManualFields(bool $manual = true): self
     {
         $this->showManualFields = $manual;
 
@@ -315,7 +301,7 @@ class AddressFinderField extends TextField
     /**
      * @return boolean
      */
-    public function getShowManualFields()
+    public function getShowManualFields(): bool
     {
         return $this->showManualFields;
     }
@@ -323,7 +309,7 @@ class AddressFinderField extends TextField
     /**
      * @return TextField
      */
-    public function getAddressField()
+    public function getAddressField(): TextField
     {
         return $this->addressField;
     }
@@ -368,7 +354,7 @@ class AddressFinderField extends TextField
      */
     public function saveInto(DataObjectInterface $record)
     {
-        if (!$this->addressField->Value()) {
+        if (!$this->addressField->getValue()) {
             // value hasn't been set. Load from the URL
             $postVars = Controller::curr()->getRequest()->requestVars();
 
@@ -377,12 +363,12 @@ class AddressFinderField extends TextField
             }
         }
 
-        $record->{$this->getName()} = $this->addressField->Value();
+        $record->{$this->getName()} = $this->addressField->getValue();
 
         if ($this->getShowManualFields()) {
             foreach ($this->getManualFields() as $field) {
                 $fieldName = $this->getNestedFieldName($field);
-                $record->{$fieldName} = $field->Value();
+                $record->{$fieldName} = $field->getValue();
             }
         }
     }
@@ -393,13 +379,13 @@ class AddressFinderField extends TextField
     public function dataValue()
     {
         $data = [
-            'Address' => $this->addressField->Value(),
+            'Address' => $this->addressField->getValue(),
         ];
 
         if ($this->getShowManualFields()) {
             foreach ($this->getManualFields() as $field) {
                 $fieldName = $this->getNestedFieldName($field, false);
-                $data[$fieldName] = $field->Value();
+                $data[$fieldName] = $field->getValue();
             }
         }
 
@@ -435,7 +421,7 @@ class AddressFinderField extends TextField
      *
      * setFieldPrefix('Work'); // $record->WorkPostcode = 1234;
      */
-    public function setFieldPrefix($prefix)
+    public function setFieldPrefix(string $prefix): self
     {
         $this->fieldPrefix = $prefix;
 
@@ -466,92 +452,99 @@ class AddressFinderField extends TextField
      * If this field is required then we require at least the first postal line
      * along with the town and postcode. Either this has been manually filled
      * in or, automatically filled in by
-     *
-     * @param Validator $validator
-     *
-     * @return bool
      */
-    public function validate($validator)
+    public function validate(): ValidationResult
     {
+        $result = parent::validate();
         $name = $this->getName();
 
-        if ($validator->fieldIsRequired($name)) {
-            // remove this as a required field as we're doing the checking here.
+        $form = $this->getForm();
+        $validator = $form ? $form->getValidator() : null;
+
+        if (!$validator || !$validator->fieldIsRequired($name)) {
+            return $result;
+        }
+
+        // remove this as a required field as we're doing the checking here.
+        if ($validator instanceof RequiredFieldsValidator) {
             $validator->removeRequiredField($name);
-
-            $fields = $this->getManualFields();
-
-            if ($this->getShowManualFields()) {
-                $postal = $fields->dataFieldByName("{$name}[PostalLine1]");
-
-                if (!$postal->Value()) {
-                    $validator->validationError(
-                        $name,
-                        _t("AddressFinderField.ENTERAVALIDADDRESS", "Please enter a valid address."),
-                        'PostalLine1',
-                        false
-                    );
-
-                    return false;
-                }
-
-                $city = $fields->dataFieldByName("{$name}[City]");
-
-                if (!$city->Value()) {
-                    $validator->validationError(
-                        $name,
-                        _t("AddressFinderField.ENTERAVALIDCITY", "Please enter a valid city.")
-                    );
-
-                    return false;
-                }
-
-                $postcode = $fields->dataFieldByName("{$name}[Postcode]");
-
-                if (!$postcode->Value()) {
-                    $validator->validationError(
-                        $name,
-                        _t("AddressFinderField.ENTERAVALIDPOSTCODE", "Please enter a valid postcode.")
-                    );
-
-                    return false;
-                }
-            } else {
-                if (!$this->addressField->Value()) {
-                    $validator->validationError(
-                        $name,
-                        _t("AddressFinderField.ENTERAVALIDADDRESS", "Please enter a valid address.")
-                    );
-
-                    return false;
-                }
-            }
-
-            if ($this->requireLatLngManual) {
-                $lat = $fields->dataFieldByName("{$name}[Latitude]");
-
-                if (!$lat->Value()) {
-                    $lat->validationError(
-                        $name,
-                        _t("AddressFinderField.LATITUDEMISSING", "Please enter a valid Latitude.")
-                    );
-
-                    return false;
-                }
-
-                $lng = $fields->dataFieldByName("{$name}[Longitude]");
-
-                if (!$lng->Value()) {
-                    $lng->validationError(
-                        $name,
-                        _t("AddressFinderField.LONGTITUDEMISSING", "Please enter a valid Longitude.")
-                    );
-
-                    return false;
-                }
+        } elseif ($validator instanceof CompositeValidator) {
+            foreach ($validator->getValidatorsByType(RequiredFieldsValidator::class) as $requiredFieldsValidator) {
+                $requiredFieldsValidator->removeRequiredField($name);
             }
         }
 
-        return true;
+        $fields = $this->getManualFields();
+
+        if ($this->getShowManualFields()) {
+            $postal = $fields->dataFieldByName("{$name}[PostalLine1]");
+
+            if (!$postal->getValue()) {
+                $result->addFieldError(
+                    $name,
+                    _t("AddressFinderField.ENTERAVALIDADDRESS", "Please enter a valid address."),
+                    ValidationResult::TYPE_ERROR,
+                    'PostalLine1',
+                    ValidationResult::CAST_TEXT
+                );
+
+                return $result;
+            }
+
+            $city = $fields->dataFieldByName("{$name}[City]");
+
+            if (!$city->getValue()) {
+                $result->addFieldError(
+                    $name,
+                    _t("AddressFinderField.ENTERAVALIDCITY", "Please enter a valid city.")
+                );
+
+                return $result;
+            }
+
+            $postcode = $fields->dataFieldByName("{$name}[Postcode]");
+
+            if (!$postcode->getValue()) {
+                $result->addFieldError(
+                    $name,
+                    _t("AddressFinderField.ENTERAVALIDPOSTCODE", "Please enter a valid postcode.")
+                );
+
+                return $result;
+            }
+        } elseif (!$this->addressField->getValue()) {
+            $result->addFieldError(
+                $name,
+                _t("AddressFinderField.ENTERAVALIDADDRESS", "Please enter a valid address.")
+            );
+
+            return $result;
+        }
+
+        if ($this->requireLatLngManual) {
+            $lat = $fields->dataFieldByName("{$name}[Latitude]");
+
+            if (!$lat->getValue()) {
+                $result->addFieldError(
+                    "{$name}[Latitude]",
+                    _t("AddressFinderField.LATITUDEMISSING", "Please enter a valid Latitude.")
+                );
+
+                return $result;
+            }
+
+            $lng = $fields->dataFieldByName("{$name}[Longitude]");
+
+            if (!$lng->getValue()) {
+                $result->addFieldError(
+                    "{$name}[Longitude]",
+                    _t("AddressFinderField.LONGTITUDEMISSING", "Please enter a valid Longitude.")
+                );
+
+                return $result;
+            }
+        }
+
+        return $result;
     }
 }

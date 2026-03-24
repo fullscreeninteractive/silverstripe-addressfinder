@@ -3,7 +3,9 @@
 namespace FullscreenInteractive\SilverStripe\Tests;
 
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 use FullscreenInteractive\SilverStripe\AddressFinderField;
 
 class AddressFinderFieldTest extends SapphireTest
@@ -29,9 +31,10 @@ class AddressFinderFieldTest extends SapphireTest
     public function testValidator()
     {
         $field = new AddressFinderField('name', 'Title');
-        $required = new RequiredFields('name');
+        $validator = RequiredFieldsValidator::create(['name']);
+        $form = new Form(null, 'TestForm', FieldList::create($field), FieldList::create(), $validator);
 
-        $this->assertFalse($field->validate($required));
+        $this->assertFalse($field->validate()->isValid());
 
         $field->setValue([
             'Address' => '1 Test Street, Test Land, 90210',
@@ -40,6 +43,6 @@ class AddressFinderFieldTest extends SapphireTest
             'Postcode' => '90210'
         ]);
 
-        $this->assertTrue($field->validate($required));
+        $this->assertTrue($field->validate()->isValid());
     }
 }
